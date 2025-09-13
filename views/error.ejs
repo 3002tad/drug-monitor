@@ -1,0 +1,16 @@
+<!-- views/error.ejs -->
+<%- include('includes/_header') %>
+<main id="main" style="padding: 2rem;">
+  <h2>Error <%= status %></h2>
+  <p><%= message %></p>
+
+  <% if (stack) { %>
+    <details>
+      <summary>Stack trace</summary>
+      <pre style="white-space: pre-wrap;"><%= stack %></pre>
+    </details>
+  <% } %>
+
+  <p><a href="/"><button>Go Home</button></a></p>
+</main>
+<%- include('includes/_footer') %>

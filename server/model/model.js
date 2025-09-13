@@ -1,30 +1,35 @@
+// server/model/model.js
 const mongoose = require('mongoose');
 
-let schema = new mongoose.Schema({
-    name : {
-        type : String,// name would be a string
-        required: true,// name is a required property
-        unique: true // the value of name must be unique
-    },
-    dosage : {
-        type : String,// dosage would be a string
-        required: true,// dosage is a required property
-    },
-    card : {
-        type: Number, // card would be a number
-        required: true
-    },
-    pack : {
-        type: Number,
-        required: true
-    },
-    perDay : {
-        type: Number,
-        required: true,
-        unique: true
-    },
-})
+const schema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+    unique: true, // tránh trùng tên thuốc
+    trim: true,
+    minlength: 6, // > 5 ký tự
+  },
+  dosage: {
+    type: String,
+    required: true,
+    match: [/^\d+-morning,\d+-afternoon,\d+-night$/, 'Invalid dosage format'],
+  },
+  card: {
+    type: Number,
+    required: true,
+    min: 1001, // > 1000
+  },
+  pack: {
+    type: Number,
+    required: true,
+    min: 1, // > 0
+  },
+  perDay: {
+    type: Number,
+    required: true,
+    min: 1,
+    max: 89, // < 90
+  },
+});
 
-const DrugDB = mongoose.model('drugs', schema);//drugs specifies the collection name, database to use was specified in connection string
-
-module.exports = DrugDB;
+module.exports = mongoose.model('drugs', schema);

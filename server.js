@@ -22,6 +22,30 @@ connectMongo();
 //load the routes
 app.use('/',require('./server/routes/routes'));//Pulls the routes file whenever this is loaded
 
+// 404 Not Found
+app.use((req, res, next) => {
+  const err = new Error('Not Found');
+  err.status = 404;
+  next(err);
+});
+
+// Error handler (hiển thị trang lỗi)
+app.use((err, req, res, next) => {
+  console.error(err.stack || err);
+  const status = err.status || 500;
+  const payload = {
+    title: 'Error',
+    status,
+    message: err.message || 'Internal Server Error',
+    stack: process.env.NODE_ENV === 'production' ? null : err.stack,
+  };
+
+  res.status(status);
+  if (req.accepts('html')) {
+    return res.render('error', payload);
+  }
+  return res.json({ error: payload.message });
+});
 
 app.listen(PORT, function() {//specifies port to listen on
 	console.log('listening on '+ PORT);

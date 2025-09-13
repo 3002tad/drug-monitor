@@ -1,66 +1,76 @@
-let url = location.host;//so it works locally and online
+// assets/js/main.js
+// Helper: chuẩn hóa base URL để chạy cả http lẫn https
+const baseUrl = `${window.location.protocol}//${window.location.host}`;
 
-$("table").rtResponsiveTables();//for the responsive tables plugin
-
-$("#add_drug").submit(function(event){//on a submit event on the element with id add_drug
-    alert($("#name").val() + " sent successfully!");//alert this in the browser
-})
-
-
-
-$("#update_drug").submit(function(event){// on clicking submit
-    event.preventDefault();//prevent default submit behaviour
-
-    //var unindexed_array = $("#update_drug");
-    var unindexed_array = $(this).serializeArray();//grab data from form
-    var data = {}
-
-    $.map(unindexed_array, function(n, i){//assign keys and values from form data
-        data[n['name']] = n['value']
-    })
-
-
-    var request = {//use a put API request to use data from above to replace what's on database
-    "url" : `http://${url}/api/drugs/${data.id}`,
-    "method" : "PUT",
-    "data" : data
+function handleAjaxError(xhr) {
+  let msg = 'Something went wrong.';
+  try { msg = (xhr.responseJSON && xhr.responseJSON.error) || xhr.responseText || msg; } catch {}
+  alert(msg);
 }
 
-$.ajax(request).done(function(response){
-    alert(data.name + " Updated Successfully!");
-		window.location.href = "/manage";//redirects to index after alert is closed
-    })
+// ====== CREATE (nếu form #add_drug tồn tại) ======
+$(document).ready(function () {
+  const $addForm = $("#add_drug");
+  if ($addForm.length) {
+    $addForm.on("submit", function (e) {
+      e.preventDefault();
+      const form = this;
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
 
-})
+      $.ajax({
+        url: `${baseUrl}/api/drugs`,
+        method: "POST",
+        data,
+      })
+        .done(() => {
+          alert("Drug created successfully!");
+          window.location.assign("/manage");
+        })
+        .fail(handleAjaxError);
+    });
+  }
 
-if(window.location.pathname == "/manage"){//since items are listed on manage
-    $ondelete = $("table tbody td a.delete"); //select the anchor with class delete
-    $ondelete.click(function(){//add click event listener
-        let id = $(this).attr("data-id") // pick the value from the data-id
+  // ====== UPDATE (nếu form #update_drug tồn tại) ======
+  const $updateForm = $("#update_drug");
+  if ($updateForm.length) {
+    $updateForm.on("submit", function (e) {
+      e.preventDefault();
+      const form = this;
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
+      const id = data.id;
 
-        let request = {//save API request in variable
-            "url" : `http://${url}/api/drugs/${id}`,
-            "method" : "DELETE"
-        }
+      $.ajax({
+        url: `${baseUrl}/api/drugs/${id}`,
+        method: "PUT",
+        data,
+      })
+        .done(() => {
+          alert("Drug updated successfully!");
+          window.location.assign("/manage");
+        })
+        .fail(handleAjaxError);
+    });
+  }
 
-        if(confirm("Do you really want to delete this drug?")){// bring out confirm box
-            $.ajax(request).done(function(response){// if confirmed, send API request
-                alert("Drug deleted Successfully!");//show an alert that it's done
-                location.reload();//reload the page
-            })
-        }
+  // ====== DELETE (ở trang /manage) ======
+  if (window.location.pathname === "/manage") {
+    $(".delete").on("click", function () {
+      const id = $(this).attr("data-id");
+      if (!id) return;
 
-    })
-}
-
-if(window.location.pathname == "/purchase"){
-//$("#purchase_table").hide();
-
-$("#drug_days").submit(function(event){//on a submit event on the element with id add_drug
-    event.preventDefault();//prevent default submit behaviour
-    $("#purchase_table").show();
-    days = +$("#days").val();
-    alert("Drugs for " + days + " days!");//alert this in the browser
-})
-
-}
+      if (confirm("Do you really want to delete this drug?")) {
+        $.ajax({
+          url: `${baseUrl}/api/drugs/${id}`,
+          method: "DELETE",
+        })
+          .done(() => {
+            alert("Drug deleted successfully!");
+            location.reload();
+          })
+          .fail(handleAjaxError);
+      }
+    });
+  }
+});

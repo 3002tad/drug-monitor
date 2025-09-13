@@ -1,15 +1,14 @@
 const express = require('express');// As in the server.js
 const route = express.Router(); //Allows us use express router in this file
+
 const services = require('../services/render');//uses the render.js file from services here
-
 const controller = require('../controller/controller');//uses the render.js file from services here
-
 const validateDrug = require('../../middleware/validateDrug');
 
 
 route.get('/', services.home);
 
-
+// Web pages
 route.get('/manage', services.manage);
 route.get('/dosage', services.dosage);
 route.get('/purchase', services.purchase);
