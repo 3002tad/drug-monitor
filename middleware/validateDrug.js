@@ -20,14 +20,14 @@ module.exports = function (req, res, next) {
     return res.status(400).send({ error: "Dosage must follow format XX-morning,XX-afternoon,XX-night." });
   }
 
-  // c) Card > 1000
-  if (!Number.isFinite(card) || card <= 1000) {
-    return res.status(400).send({ error: "Card must be greater than 1000." });
+  // c) Card > 0  (số viên trong 1 vỉ)
+  if (!Number.isFinite(card) || card <= 0) {
+    return res.status(400).send({ error: "Card (pills per card) must be greater than 0." });
   }
 
-  // d) Pack > 0
+  // d) Pack > 0  (số vỉ trong 1 hộp)
   if (!Number.isFinite(pack) || pack <= 0) {
-    return res.status(400).send({ error: "Pack must be greater than 0." });
+    return res.status(400).send({ error: "Pack (cards per pack) must be greater than 0." });
   }
 
   // e) PerDay > 0 và < 90

@@ -29,11 +29,11 @@
             <td><%= drugs[i].name %></td>
             <td>
               <%= drugs[i].cardsToBuy %>
-              <small style="color:#666;">(card size: <%= drugs[i].card %>)</small>
+              <small style="color:#666;">(pills/card: <%= drugs[i].pillsPerCard %>)</small>
             </td>
             <td>
-              <%= drugs[i].packsToBuy %>
-              <small style="color:#666;">(pack size: <%= drugs[i].pack %>)</small>
+              <%= drugs[i].cardsToBuy %>
+              <small style="color:#666;">(cards/pack: <%= drugs[i].cardsPerPack %>, pills/pack: <%= drugs[i].pillsPerPack %>)</small>
             </td>
           </tr>
         <% } %>

@@ -5,20 +5,22 @@ const schema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    unique: true, // tránh trùng tên thuốc
+    unique: true,
     trim: true,
-    minlength: 6, // > 5 ký tự
+    minlength: 6,
   },
   dosage: {
     type: String,
     required: true,
     match: [/^\d+-morning,\d+-afternoon,\d+-night$/, 'Invalid dosage format'],
   },
+  // card = số viên trong 1 vỉ
   card: {
     type: Number,
     required: true,
-    min: 1001, // > 1000
+    min: 1, // > 0
   },
+  // pack = số vỉ trong 1 hộp
   pack: {
     type: Number,
     required: true,
@@ -28,7 +30,7 @@ const schema = new mongoose.Schema({
     type: Number,
     required: true,
     min: 1,
-    max: 89, // < 90
+    max: 89,
   },
 });
 
