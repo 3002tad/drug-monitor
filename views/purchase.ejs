@@ -1,47 +1,101 @@
 <!-- views/purchase.ejs -->
 <%- include('includes/_header') %>
 
-<main id="main" style="padding: 1.5rem;">
+<main id="main" style="padding:1.25rem;">
   <h2>Purchase Plan</h2>
 
-  <form id="drug_days" method="GET" action="/purchase" style="margin-bottom: 1rem;">
-    <label for="days">Days: </label>
-    <input type="number" id="days" name="days" value="<%= days || 30 %>" min="1" max="365" />
-    <button type="submit">Enter</button>
+  <!-- Thông tin đầu vào -->
+  <form method="GET" action="/purchase" style="margin: 0.75rem 0 1rem;">
+    <label for="days"><strong>Days:</strong></label>
+    <input type="number" id="days" name="days" value="<%= days || 30 %>" min="1" max="365" style="width:90px; margin-left: 0.5rem;">
+    <button type="submit" style="margin-left:0.5rem;">Update</button>
   </form>
 
-  <p>Plan for <strong><%= days %></strong> day(s)</p>
-
-  <table id="purchase_table" border="1" cellpadding="8" cellspacing="0">
+  <!-- Bảng kết quả chính -->
+  <table border="1" cellpadding="8" cellspacing="0" style="width:100%; border-collapse:collapse;">
     <thead>
       <tr>
         <th>#</th>
         <th>Name</th>
+        <th>Dosage</th>
+        <th>PerDay</th>
+        <th>Needed (pills)</th>
         <th>Cards to buy</th>
+        <th>Cards leftover</th>
+        <th>Cards efficiency</th>
         <th>Packs to buy</th>
+        <th>Packs leftover</th>
+        <th>Packs efficiency</th>
+        <th>Action</th>
       </tr>
     </thead>
     <tbody>
       <% if (drugs && drugs.length) { %>
-        <% for (let i = 0; i < drugs.length; i++) { %>
+        <% drugs.forEach((d, i) => { %>
           <tr>
             <td><%= i + 1 %></td>
-            <td><%= drugs[i].name %></td>
             <td>
-              <%= drugs[i].cardsToBuy %>
-              <small style="color:#666;">(pills/card: <%= drugs[i].pillsPerCard %>)</small>
+              <strong><%= d.name %></strong>
+              <!-- Thông tin phụ trợ -->
+              <div style="color:#666; font-size: 0.9em;">
+                pills/card: <%= d.pillsPerCard %>,
+                cards/pack: <%= d.cardsPerPack %>,
+                pills/pack: <%= d.pillsPerPack %>
+              </div>
             </td>
+            <td><code><%= d.dosage %></code></td>
+            <td><%= d.perDay %></td>
+            <td><%= d.pillsNeeded %></td>
+
+            <!-- Cards -->
+            <td><%= d.cardsBuy %></td>
+            <td><%= d.cardsLeftover %></td>
+            <td><%= d.cardsEff ? d.cardsEff.toFixed(1) + '%' : '0%' %></td>
+
+            <!-- Packs -->
+            <td><%= d.packsBuy %></td>
+            <td><%= d.packsLeftover %></td>
+            <td><%= d.packsEff ? d.packsEff.toFixed(1) + '%' : '0%' %></td>
+
+            <!-- Action -->
             <td>
-              <%= drugs[i].cardsToBuy %>
-              <small style="color:#666;">(cards/pack: <%= drugs[i].cardsPerPack %>, pills/pack: <%= drugs[i].pillsPerPack %>)</small>
+              <button class="confirm-btn" 
+                      data-name="<%= d.name %>" 
+                      data-needed="<%= d.pillsNeeded %>"
+                      data-cards="<%= d.cardsBuy %>"
+                      data-packs="<%= d.packsBuy %>">
+                Confirm Purchase
+              </button>
             </td>
           </tr>
-        <% } %>
+        <% }) %>
       <% } else { %>
-        <tr><td colspan="4">No data.</td></tr>
+        <tr><td colspan="12">No data.</td></tr>
       <% } %>
     </tbody>
   </table>
+
+  <p style="margin-top:0.75rem; color:#555;">
+    * Quy ước: <code>card = pills/card (viên/vỉ)</code>, <code>pack = cards/pack (vỉ/hộp)</code>.
+  </p>
 </main>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.confirm-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const name = this.dataset.name;
+        const needed = this.dataset.needed;
+        const cards = this.dataset.cards;
+        const packs = this.dataset.packs;
+
+        if (confirm(`Confirm purchase for ${name}?\nNeeded: ${needed} pills\nCards: ${cards}, Packs: ${packs}`)) {
+          alert(`✅ Purchase confirmed for ${name}!`);
+          // TODO: nếu cần lưu DB thì gửi AJAX POST tới /api/purchase
+        }
+      });
+    });
+  });
+</script>
 
 <%- include('includes/_footer') %>

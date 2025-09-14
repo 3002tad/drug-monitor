@@ -1,0 +1,57 @@
+<!-- views/check_dosage.ejs -->
+<%- include('includes/_header') %>
+
+<main id="main" style="padding:1.5rem;">
+  <h2>Check Dosage</h2>
+  <p>Kiểm tra định dạng <code>XX-morning,XX-afternoon,XX-night</code>, tách số lượng theo buổi, và đối chiếu với <code>perDay</code> đã lưu.</p>
+
+  <table border="1" cellpadding="8" cellspacing="0" style="width:100%; border-collapse:collapse; margin-top:0.75rem;">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>Dosage</th>
+        <th>Valid</th>
+        <th>Morning</th>
+        <th>Afternoon</th>
+        <th>Night</th>
+        <th>PerDay (from dosage)</th>
+        <th>PerDay (saved)</th>
+        <th>Matches</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (items && items.length) { %>
+        <% items.forEach((it, i) => { %>
+          <tr>
+            <td><%= i + 1 %></td>
+            <td><strong><%= it.name %></strong></td>
+            <td><code><%= it.dosage %></code></td>
+            <td style="color:<%= it.valid ? 'green' : 'red' %>;"><%= it.valid ? 'OK' : 'INVALID' %></td>
+            <td><%= it.morning ?? '-' %></td>
+            <td><%= it.afternoon ?? '-' %></td>
+            <td><%= it.night ?? '-' %></td>
+            <td><%= it.perDayFromDosage ?? '-' %></td>
+            <td><%= it.perDaySaved %></td>
+            <td style="color:<%= it.perDayMatches === null ? '#999' : (it.perDayMatches ? 'green' : 'orange') %>;">
+              <%= it.perDayMatches === null ? 'n/a' : (it.perDayMatches ? 'YES' : 'NO') %>
+            </td>
+            <td>
+              <a href="/update-drug?id=<%= it._id %>">Edit</a>
+            </td>
+          </tr>
+        <% }) %>
+      <% } else { %>
+        <tr><td colspan="11">No data.</td></tr>
+      <% } %>
+    </tbody>
+  </table>
+
+  <p style="margin-top:0.75rem;color:#555;">
+    * Nếu “Valid” là <strong>INVALID</strong>, hãy sửa lại dosage theo mẫu: <code>1-morning,1-afternoon,1-night</code>.<br/>
+    * “Matches” = YES nếu tổng (morning+afternoon+night) bằng <code>perDay</code> đang lưu.
+  </p>
+</main>
+
+<%- include('includes/_footer') %>

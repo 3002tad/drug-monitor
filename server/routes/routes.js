@@ -17,6 +17,7 @@ const validateDrug = require('../../middleware/validateDrug');
 route.get('/', services.homeRoutes);
 route.get('/add-drug', services.addDrug);
 route.get('/update-drug', services.updateDrug);
+route.get('/check-dosage', services.checkDosage);
 route.get('/manage', services.manage);
 route.get('/purchase', services.purchase);
 
