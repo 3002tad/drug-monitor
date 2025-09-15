@@ -10,6 +10,7 @@ const services = require('../services/render');
 console.log('render services exported keys:', Object.keys(services));
 
 const controller = require('../controller/controller');
+const extraApi = require('../controller/extraApi');
 // validateDrug nằm ở project root /middleware, còn file này ở /server/routes => ../../
 const validateDrug = require('../../middleware/validateDrug');
 
@@ -26,5 +27,8 @@ route.post('/api/drugs', validateDrug, controller.create);
 route.get('/api/drugs', controller.find);
 route.put('/api/drugs/:id', validateDrug, controller.update);
 route.delete('/api/drugs/:id', controller.delete);
+
+route.get('/api/dosage/check', extraApi.checkDosageAPI);
+route.get('/api/purchase/plan', extraApi.purchasePlanAPI);
 
 module.exports = route;
